@@ -1,16 +1,27 @@
-import * as cdk from 'aws-cdk-lib';
+import { Stack, StackProps, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
-export class ColorMatchPuzzleStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class ColorMatchPuzzleStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const siteBucket = new s3.Bucket(this, 'MyStaticSiteBucket', {
+      websiteIndexDocument: 'index.html',
+      publicReadAccess: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'ColorMatchPuzzleQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+      sources: [s3deploy.Source.asset('./src')],
+      destinationBucket: siteBucket,
+    });
+
+    new CfnOutput(this, 'WebsiteURL', {
+      value: siteBucket.bucketWebsiteUrl,
+      description: 'S3静的ウェブサイトのURL',
+    });
   }
 }

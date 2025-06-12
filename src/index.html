@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カラーマッチパズル</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>カラーマッチパズル</h1>
+            <div class="pause-btn" id="pauseBtn" onclick="togglePause()">
+                <span class="pause-icon" id="pauseIcon">⏸</span>
+            </div>
+        </div>
+        
+        <div class="game-layout">
+            <div class="left-panel">
+                <div class="score-info">
+                    <h3>スコア</h3>
+                    <div class="value" id="score">0</div>
+                    <h3>最終コンボ</h3>
+                    <div class="value" id="combo">0</div>
+                </div>
+                
+                <div class="next-block-container">
+                    <h3>次のブロック</h3>
+                    <div class="next-block-preview" id="nextBlockPreview"></div>
+                </div>
+            </div>
+            
+            <div class="game-board-container">
+                <div class="game-board" id="gameBoard">
+                    <div class="danger-line" id="dangerLine"></div>
+                    <div class="game-over" id="gameOver">
+                        <h2>ゲーム終了！</h2>
+                        <p>最終スコア: <span id="finalScore">0</span></p>
+                        <button class="btn" onclick="showStartScreen()">新しいゲーム</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="score-info">
+                <h3>レベル</h3>
+                <div class="value" id="level">1</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="moveLeft()">←</button>
+            <button class="btn" onclick="moveRight()">→</button>
+            <button class="btn" onclick="rotateBlock()">回転</button>
+            <button class="btn" onclick="dropBlock()">↓</button>
+        </div>
+        
+        <div class="instructions">
+            <p><strong>ルール:</strong> 同じ色のブロックを4つ以上縦・横・斜めに並べて消そう！</p>
+            <p>左右矢印：移動 | 上矢印：即座に落下 | スペース：回転</p>
+        </div>
+        
+        <div class="level-up" id="levelUp">
+            LEVEL UP!
+        </div>
+        <div class="combo-display" id="comboDisplay">
+            <span id="comboCount">0</span> COMBO!
+        </div>
+    </div>
+
+    <div class="start-screen" id="startScreen">
+        <h2>カラーマッチパズル</h2>
+        <div class="game-description">
+            <p>同じ色のブロックを4つ以上並べて消去しよう！</p>
+            <p>縦・横・斜めのいずれかに揃えればOK</p>
+            <p>危険ラインを超えないように気をつけて！</p>
+        </div>
+        
+        <div class="difficulty-selection">
+            <h3>難易度を選択してください</h3>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn selected" onclick="selectDifficulty('easy')">初級</button>
+                <button class="difficulty-btn" onclick="selectDifficulty('medium')">中級</button>
+                <button class="difficulty-btn" onclick="selectDifficulty('hard')">上級</button>
+            </div>
+            <div class="difficulty-info" id="difficultyInfo">
+                初級：赤、青、黄の3色
+            </div>
+        </div>
+        
+        <button class="start-btn" onclick="startGame()">ゲームスタート</button>
+    </div>
+
+    <div class="pause-screen" id="pauseScreen">
+        <h2>一時停止中</h2>
+        <p>ゲームを再開しますか？</p>
+        <button class="btn" onclick="togglePause()">再開</button>
+        <button class="btn" onclick="togglePause(),showStartScreen()">メニューに戻る</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
