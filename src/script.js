@@ -13,6 +13,31 @@ const DIFFICULTY_INFO = {
     hard: '上級：中級 + 黒の5色'
 };
 const DANGER_LINE_Y = 2; // 危険ラインの位置（上から3行目）
+// 音声管理
+const audio = {
+    bgm: new Audio('./sounds/BGM_ふわふわダンス.mp3'),
+    fix: new Audio('./sounds/fix.mp3'),
+    match: new Audio('./sounds/match.mp3'),
+    levelUp: new Audio('./sounds/levelUp.mp3'),
+};
+audio.bgm.loop = true;
+// 音声再生関数
+function playSound(name) {
+    const sound = audio[name];
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log('音声再生エラー:', e));
+    }
+}
+// BGM開始
+function startBGM() {
+    audio.bgm.play().catch(e => console.log('BGM再生エラー:', e));
+}
+// BGM停止
+function stopBGM() {
+    audio.bgm.pause();
+    audio.bgm.currentTime = 0;
+}
 
 // 画面サイズに応じてブロックサイズを調整
 function adjustBlockSize() {
@@ -150,10 +175,12 @@ function togglePause() {
         clearInterval(dropTimer);
         document.getElementById('pauseScreen').style.display = 'block';
         document.getElementById('pauseIcon').textContent = '▶';
+        audio.bgm.pause();
     } else {
         document.getElementById('pauseScreen').style.display = 'none';
         document.getElementById('pauseIcon').textContent = '⏸';
         startDropTimer();
+        audio.bgm.play();
     }
 }
 
@@ -223,6 +250,8 @@ function rotateCurrentBlock() {
 // ブロック固定
 function placeBlock() {
     if (!currentBlock) return;
+
+    playSound('fix');
     
     for (let row = 0; row < 2; row++) {
         for (let col = 0; col < 2; col++) {
@@ -304,6 +333,7 @@ function checkMatches(callback) {
     }
     
     if (allMatches.length > 0) {
+        playSound('match');
         // すべてのマッチを統合
         const allMatchedPositions = new Set();
         allMatches.forEach(match => {
@@ -335,6 +365,7 @@ function checkMatches(callback) {
                 showLevelUp();
                 level = newLevel;
                 // レベルアップ時に落下速度を更新
+                audio.levelUp.play();
                 startDropTimer();
             }
             level = newLevel;
@@ -522,6 +553,7 @@ function startGame() {
     
     initGame();
     gameRunning = true;
+    startBGM();
     
     if (advanceBlock()) {
         render();
@@ -650,7 +682,12 @@ window.addEventListener('resize', () => {
 
 // ページ離脱時の自動一時停止
 document.addEventListener('visibilitychange', () => {
-    if (document.hidden && gameRunning && !gamePaused) {
-        togglePause();
+    if (document.hidden) {
+        if (gameRunning && !gamePaused) {
+            togglePause();
+        }
+        audio.bgm.pause();
+    } else if (gameRunning && !gamePaused) {
+        audio.bgm.play();
     }
 });
